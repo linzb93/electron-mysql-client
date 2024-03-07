@@ -2,32 +2,48 @@
   <div class="flexalign-start">
     <left-panel @select="selectTable" />
     <div class="main flexitem-1">
-      <el-table :data="list">
-        <el-table-column v-for="prop in tableProps" :key="prop.title">
-          <template slot-scope="scope">
-            {{ scope.row[prop] }}
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" fixed="right">
-          <template slot-scope="scope">
-            <delete-confirm @confirm="del(scope.row)" />
-          </template>
-        </el-table-column>
-      </el-table>
+      <template v-if="loaded">
+        <el-table :data="list" border>
+          <el-table-column
+            v-for="prop in tableProps"
+            :key="prop.title"
+            :label="prop.title"
+          >
+            <template #default="scope">
+              <p>{{ scope.row[prop.title] }}</p>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" fixed="right">
+            <template #default="scope">
+              <delete-confirm @confirm="del(scope.row)" />
+            </template>
+          </el-table-column>
+        </el-table>
+        <pagination
+          :total="totalCount"
+          v-model:page="query.pageIndex"
+          v-model:limit="query.pageSize"
+          @pagination="getList"
+        />
+      </template>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, shallowRef, reactive, shallowReactive } from "vue";
-import request from "../../plugins/request";
+import { ref, shallowRef, shallowReactive } from "vue";
+import request from "@/plugins/request";
 import LeftPanel from "./components/LeftPanel.vue";
 import { ElMessage } from "element-plus";
+import DeleteConfirm from "@/components/DeleteConfirm.vue";
+import Pagination from "@/components/Pagination.vue";
 const query = shallowReactive({
   pageSize: 10,
   pageIndex: 1,
-  id: "",
+  database: "",
+  table: "",
 });
+const loaded = shallowRef(false);
 const list = ref([]);
 const totalCount = shallowRef(0);
 const getList = async () => {
@@ -44,14 +60,19 @@ const resetList = () => {
 const tableProps = shallowRef([]);
 const getProps = async () => {
   const res = await request("table-getProps", {
-    id: query.id,
+    database: query.database,
+    table: query.table,
   });
-  tableProps.value = res;
+  tableProps.value = res.list[0].map((item) => ({
+    title: item.Field,
+  }));
 };
-const selectTable = (id) => {
-  query.id = id;
-  resetList();
-  getProps();
+const selectTable = (obj) => {
+  query.database = obj.database;
+  query.table = obj.name;
+  Promise.all([resetList(), getProps()]).then(() => {
+    loaded.value = true;
+  });
 };
 
 const del = async (row) => {

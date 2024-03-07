@@ -41,14 +41,14 @@
 </template>
 
 <script setup>
-import dayjs from "dayjs";
-import { ref, shallowRef } from "vue";
-import request from "../../plugins/request";
+import { ref, shallowRef, onMounted } from "vue";
+import request from "@/plugins/request";
 import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
-import errorDialog from "../../components/errorDialog/index.js";
+import errorDialog from "@/components/errorDialog/index";
 const router = useRouter();
 
+const loaded = shallowRef(false);
 const rules = {
   username: {
     required: true,
@@ -59,30 +59,50 @@ const rules = {
     message: "请输入密码",
   },
 };
+
+onMounted(async () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    loaded.value = true;
+    return;
+  }
+  try {
+    await request("token-validate", {
+      token,
+    });
+  } catch (error) {
+    ElMessage.error("登录授权到期，请重新登录");
+    loaded.value = true;
+    return;
+  }
+  router.push("/home");
+});
+
 const form = ref({
   host: "",
   port: 0,
   username: "",
   password: "",
 });
+let token = "";
 const formRef = ref(null);
 const login = async () => {
   const isValid = await formRef.value.validate();
   if (!isValid) {
     return;
   }
+
   try {
-    await request("login", form.value);
+    const ret = await request("login", form.value);
+    token = ret.token;
   } catch (error) {
-    console.log(error);
-    const errorRes = error.response;
-    // errorDialog({
-    //   message: "登录失败",
-    //   detail: errorRes.message,
-    // });
+    errorDialog({
+      message: "登录失败",
+      detail: error.result.detail,
+    });
     return;
   }
-  localStorage.setItem("lastExpireDate", dayjs().format("YYYY-MM-DD"));
+  localStorage.setItem("token", token);
   ElMessage({
     type: "success",
     message: "登录成功",
@@ -97,11 +117,12 @@ const register = async () => {
     return;
   }
   try {
-    await request("login-request", form.value);
+    const ret = await request("register", form.value);
+    token = ret.token;
   } catch (error) {
     return;
   }
-  localStorage.setItem("lastExpireDate", dayjs().format("YYYY-MM-DD"));
+  localStorage.setItem("token", token);
   ElMessage({
     type: "success",
     message: "注册成功",

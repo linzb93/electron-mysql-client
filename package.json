@@ -25,6 +25,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.6",
     "@vitejs/plugin-vue": "^5.0.1",
     "electron": "^28.1.0",
     "electron-builder": "^24.9.1",
@@ -40,6 +41,7 @@
   "dependencies": {
     "dayjs": "^1.11.10",
     "element-plus": "^2.6.0",
+    "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.9.2",
     "vue-router": "^4.3.0"
   }

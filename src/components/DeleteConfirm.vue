@@ -1,23 +1,23 @@
 <template>
   <el-popover
-    v-model="visible"
-    :placement="placement"
+    v-model:visible="visible"
+    placement="top"
     class="confirm-pop"
-    :offset="offset"
+    trigger="click"
   >
     <div class="confirm">
       <h3 class="title">{{ title }}</h3>
       <div class="content"><slot /></div>
-      <div class="confirm-btns dz-flexpack-end">
-        <el-button @click="onCancel" size="mini">取消</el-button>
-        <el-button type="primary" size="mini" @click="onConfirm">{{
+      <div class="confirm-btns flexpack-end">
+        <el-button @click="onCancel" size="small">取消</el-button>
+        <el-button type="primary" size="small" @click="onConfirm">{{
           confirmButtonText
         }}</el-button>
       </div>
     </div>
-    <span slot="reference">
+    <template #reference>
       <el-button size="small" type="danger">删除</el-button>
-    </span>
+    </template>
   </el-popover>
 </template>
 
@@ -25,7 +25,10 @@
 export default {
   components: {},
   props: {
-    title: String,
+    title: {
+      type: String,
+      default: "确认删除？",
+    },
     confirmButtonText: {
       type: String,
       default: "确定",

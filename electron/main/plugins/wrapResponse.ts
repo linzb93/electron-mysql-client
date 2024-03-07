@@ -1,6 +1,10 @@
-export default (raw) => {
+import lodash from "lodash";
+const { omit } = lodash;
+
+export default (raw: any) => {
   return {
-    code: 200,
-    result: raw,
+    code: raw.code || 200,
+    message: raw.message,
+    result: omit(raw, ["code", "message"]),
   };
 };

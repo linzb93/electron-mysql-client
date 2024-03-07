@@ -1,23 +1,17 @@
 <template>
   <div :class="{ hidden: hidden }" class="pagination-container">
     <el-pagination
-      :background="background"
       v-model:current-page="currentPage"
       v-model:page-size="pageSize"
       hide-on-single-page
-      :layout="layout"
-      :page-sizes="pageSizes"
-      :pager-count="pagerCount"
       :total="total"
-      v-bind="$attrs"
-      @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
   </div>
 </template>
 
 <script>
-import { scrollTo } from "./plugins/scroll-to";
+import { scrollTo } from "../plugins/scroll-to";
 
 export default {
   name: "Pagination",
@@ -33,29 +27,6 @@ export default {
     limit: {
       type: Number,
       default: 20,
-    },
-    pageSizes: {
-      type: Array,
-      default() {
-        return [10, 20, 30, 50];
-      },
-    },
-    // 移动端页码按钮的数量端默认值5
-    pagerCount: {
-      type: Number,
-      default: document.body.clientWidth < 992 ? 5 : 7,
-    },
-    layout: {
-      type: String,
-      default: "total, sizes, prev, pager, next, jumper",
-    },
-    background: {
-      type: Boolean,
-      default: true,
-    },
-    autoScroll: {
-      type: Boolean,
-      default: true,
     },
     hidden: {
       type: Boolean,
@@ -81,17 +52,9 @@ export default {
     },
   },
   methods: {
-    handleSizeChange(val) {
-      this.$emit("pagination", { page: this.currentPage, limit: val });
-      if (this.autoScroll) {
-        scrollTo(0, 800);
-      }
-    },
     handleCurrentChange(val) {
       this.$emit("pagination", { page: val, limit: this.pageSize });
-      if (this.autoScroll) {
-        scrollTo(0, 800);
-      }
+      scrollTo(0, 800);
     },
   },
 };
