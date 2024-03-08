@@ -1,4 +1,17 @@
 <template>
+  <header class="flexpack-end">
+    <el-dropdown @command="handleCommand">
+      <el-avatar
+        :size="20"
+        src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
+      />
+      <template #dropdown>
+        <el-dropdown-menu>
+          <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
+  </header>
   <div class="flexalign-start">
     <left-panel @select="selectTable" />
     <div class="main flexitem-1">
@@ -31,12 +44,27 @@
 </template>
 
 <script setup>
-import { ref, shallowRef, shallowReactive } from "vue";
+import { ref, shallowRef, shallowReactive, onMounted } from "vue";
 import request from "@/plugins/request";
+import request2 from "@/plugins/request2";
 import LeftPanel from "./components/LeftPanel.vue";
 import { ElMessage } from "element-plus";
+import { useRouter } from "vue-router";
 import DeleteConfirm from "@/components/DeleteConfirm.vue";
 import Pagination from "@/components/Pagination.vue";
+
+const router = useRouter();
+
+// 头部
+const handleCommand = async (command) => {
+  if (command === "logout") {
+    await request("logout");
+    ElMessage.success("退出成功");
+    localStorage.removeItem("token");
+    router.back();
+  }
+};
+// 列表
 const query = shallowReactive({
   pageSize: 10,
   pageIndex: 1,
@@ -82,5 +110,12 @@ const del = async (row) => {
   ElMessage.success("删除成功");
   getList();
 };
+
+onMounted(async () => {
+  const data = await request2("login", {
+    id: 3,
+  });
+  console.log(data);
+});
 </script>
 <style lang="scss" scoped></style>

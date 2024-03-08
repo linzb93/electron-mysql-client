@@ -1,8 +1,8 @@
 import { app, BrowserWindow, shell, ipcMain } from "electron";
-import wrapResponse from "./plugins/wrapResponse";
+import mysql from "./plugins/mysql";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import apiList from "./apiList";
+import registerRoute from "./plugins/route";
 
 globalThis.__filename = fileURLToPath(import.meta.url);
 globalThis.__dirname = dirname(__filename);
@@ -81,22 +81,15 @@ async function createWindow() {
 
 app.whenReady().then(async () => {
   createWindow();
-  // 前后端接口
-  ipcMain.handle("api", async (event, requestStr: string) => {
-    const request = JSON.parse(requestStr) as any;
-    const { path } = request;
-    const match = apiList.find((item) => item.path === path);
-    if (match) {
-      const { actions } = match;
-      const ret = await actions(request);
-      return wrapResponse(ret);
-    }
-  });
+  registerRoute();
 });
 
 app.on("window-all-closed", () => {
   win = null;
-  if (process.platform !== "darwin") app.quit();
+  mysql.end();
+  if (process.platform !== "darwin") {
+    app.quit();
+  }
 });
 
 app.on("second-instance", () => {

@@ -11,7 +11,8 @@ export default defineConfig(({ command }) => {
 
   const isServe = command === "serve";
   const isBuild = command === "build";
-  const sourcemap = isServe || !!process.env.VSCODE_DEBUG;
+  // const sourcemap = isServe || !!process.env.VSCODE_DEBUG;
+  const sourcemap = false;
 
   return {
     resolve: {
