@@ -1,8 +1,8 @@
 <template>
-  <header class="flexpack-end">
+  <header class="flexalign-center flexpack-end">
     <el-dropdown @command="handleCommand">
       <el-avatar
-        :size="20"
+        :size="30"
         src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
       />
       <template #dropdown>
@@ -16,12 +16,31 @@
     <left-panel @select="selectTable" />
     <div class="main flexitem-1">
       <template v-if="loaded">
-        <el-table :data="list" border>
-          <el-table-column
-            v-for="prop in tableProps"
-            :key="prop.title"
-            :label="prop.title"
-          >
+        <h1>{{ query.table }}</h1>
+        <div class="flexalign-center">
+          <div class="flexitem-1">
+            <el-button type="primary" @click="showAdd">添加数据</el-button>
+          </div>
+          <div class="flexalingn-center">
+            <el-switch v-model="showPropDesc" />
+            <span class="ml10">显示字段属性</span>
+          </div>
+        </div>
+        <el-table :data="list" border class="mt10">
+          <el-table-column v-for="prop in tableProps" :key="prop.title">
+            <template #header>
+              {{ prop.title }}
+              <el-popover
+                v-if="showPropDesc"
+                placement="top-start"
+                trigger="hover"
+              >
+                <template #reference>
+                  <el-icon><Warning /></el-icon>
+                </template>
+                <div v-html="getPropDesc(prop.title)"></div>
+              </el-popover>
+            </template>
             <template #default="scope">
               <p>{{ scope.row[prop.title] }}</p>
             </template>
@@ -41,18 +60,26 @@
       </template>
     </div>
   </div>
+  <create-dialog
+    v-model:visible="visible.create"
+    :source="tableProps"
+    :database="query.database"
+    :table="query.table"
+    @submit="getList"
+  />
 </template>
 
 <script setup>
-import { ref, shallowRef, shallowReactive, onMounted } from "vue";
+import { ref, shallowRef, shallowReactive } from "vue";
 import request from "@/plugins/request";
-import request2 from "@/plugins/request2";
+import omit from "lodash/omit";
 import LeftPanel from "./components/LeftPanel.vue";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElIcon } from "element-plus";
+import { Warning } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
 import DeleteConfirm from "@/components/DeleteConfirm.vue";
 import Pagination from "@/components/Pagination.vue";
-
+import CreateDialog from "./components/CreateData.vue";
 const router = useRouter();
 
 // 头部
@@ -91,7 +118,8 @@ const getProps = async () => {
     database: query.database,
     table: query.table,
   });
-  tableProps.value = res.list[0].map((item) => ({
+  tableProps.value = res.list.map((item) => ({
+    ...omit(item, ["Field"]),
     title: item.Field,
   }));
 };
@@ -111,11 +139,28 @@ const del = async (row) => {
   getList();
 };
 
-onMounted(async () => {
-  const data = await request2("login", {
-    id: 3,
-  });
-  console.log(data);
+const showPropDesc = shallowRef(false);
+const getPropDesc = (prop) => {
+  if (!prop) {
+    return "";
+  }
+  const match = tableProps.value.find((item) => item.title === prop);
+  if (match) {
+    return `类型：${match.Type}<br />允许非空：${
+      match.Null === "NO" ? "是" : "否"
+    }`;
+  }
+  return "";
+};
+const visible = shallowReactive({
+  create: false,
 });
+const showAdd = () => {
+  visible.create = true;
+};
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+header {
+  height: 70px;
+}
+</style>

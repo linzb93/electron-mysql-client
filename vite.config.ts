@@ -26,7 +26,7 @@ export default defineConfig(({ command }) => {
         main: {
           // Shortcut of `build.lib.entry`
           entry: "electron/main/index.ts",
-          onstart({ startup }) {
+          onstart({ startup, reload }) {
             if (process.env.VSCODE_DEBUG) {
               console.log(
                 /* For `.vscode/.debug.script.mjs` */ "[startup] Electron App"
@@ -50,6 +50,9 @@ export default defineConfig(({ command }) => {
                 ),
               },
             },
+            optimizeDeps: {
+              exclude: ['mysql']
+            }
           },
         },
         preload: {

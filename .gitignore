@@ -131,3 +131,4 @@ dist
 package-lock.json
 dist-electron/
 dist/
+release/

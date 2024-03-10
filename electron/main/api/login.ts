@@ -1,10 +1,8 @@
 import Controller from "../plugins/route/Controller";
 import { Route } from "../plugins/route/decorators";
 import jwt from "jsonwebtoken";
-import lodash from "lodash";
+import {pick} from "lodash-es";
 import { HTTP_STATUS } from "../plugins/constant";
-
-const { pick } = lodash;
 const jwtVerify = (token: string) =>
   new Promise((resolve, reject) => {
     jwt.verify(token, "shhhhh", (err, decoded) => {
@@ -66,6 +64,10 @@ class LoginController extends Controller {
     return {
       message: "token有效",
     };
+  }
+  @Route('register')
+  register(params:any) {
+    // 注册功能以后再写
   }
 }
 export default LoginController;

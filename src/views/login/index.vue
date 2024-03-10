@@ -45,7 +45,7 @@ import { ref, shallowRef, onMounted } from "vue";
 import request from "@/plugins/request";
 import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
-import errorDialog from "@/components/errorDialog/index";
+import errorDialog from "@/components/errorDialog";
 const router = useRouter();
 
 const loaded = shallowRef(false);

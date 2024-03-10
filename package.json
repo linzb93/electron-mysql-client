@@ -1,9 +1,9 @@
 {
   "name": "mysql-client-lite",
-  "version": "28.0.0",
+  "version": "1.0.0",
   "main": "dist-electron/main/index.js",
-  "description": "Really simple Electron + Vue + Vite boilerplate.",
-  "author": "草鞋没号 <308487730@qq.com>",
+  "description": "轻量mysql客户端",
+  "author": "linzb93",
   "license": "MIT",
   "private": true,
   "keywords": [
@@ -22,6 +22,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build && electron-builder",
+    "build:app": "electron-builder",
     "preview": "vite preview"
   },
   "devDependencies": {
@@ -44,5 +45,12 @@
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.9.2",
     "vue-router": "^4.3.0"
+  },
+  "build": {
+    "appId": "com.linzb93.mysql",
+    "productName": "Mysql Client",
+    "mac": {
+      "icon": "public/logo.icns"
+    }
   }
 }

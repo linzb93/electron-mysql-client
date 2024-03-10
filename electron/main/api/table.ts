@@ -18,32 +18,22 @@ export default class extends Controller {
   async getTableProps(request) {
     const { params } = request;
     await this.mysql.changeUser({ database: params.database });
-    const list = await this.mysql.execute(`desc ${params.table}`);
+    const [list] = await this.mysql.execute(`desc ${params.table}`);
     return {
       message: "success",
       list,
     };
   }
-  @Route("list-get")
-  async queryList(request) {
-    const { params } = request;
+  @Route('table-create')
+  async createTable(request) {
+    const {params} = request;
     await this.mysql.changeUser({ database: params.database });
-    const list = await this.mysql.query(`select * from ${params.table}`);
+    await this.mysql.execute(`create table ${params.tableName} (${params.formList.map(formItem => {
+      const type = ['float', 'decimal', 'char', 'varchar'].includes(formItem.type) ? `${formItem.type}(${formItem.extraData})` : formItem.type;
+      return `${formItem.name} ${type}`
+    }).join(',')})`);
     return {
-      message: "success",
-      list: list[0],
-      totalCount: list[0].length,
-    };
-  }
-  @Route("list-delete")
-  async deleteList(request) {
-    const { params } = request;
-    await this.mysql.changeUser({ database: params.database });
-    await this.mysql.execute(
-      `delete from ${params.table} where id = ${params.id}`
-    );
-    return {
-      message: "success",
-    };
+      message: 'success',
+    }
   }
 }

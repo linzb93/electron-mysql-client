@@ -1,4 +1,9 @@
-export default async (path: string, params: any) => {
+import { unref, isReactive } from "vue";
+import { sleep } from "./util";
+interface Option {
+  delay: number
+}
+export default async (path: string, params: any, options?: Option) => {
   const res = await window.ipcRenderer.invoke(
     "api",
     JSON.stringify({
@@ -6,20 +11,20 @@ export default async (path: string, params: any) => {
       params,
     })
   );
+  if (options?.delay) {
+    await sleep(options.delay);
+  }
   const len = 10;
-  console.log(`%c┌${`─`.repeat(len)}`, "color:red");
-  console.log("%c|%c# api log", "color:red", "font-size:16px;font-weight:bold");
-  console.log(
-    `%c|%c发送请求：%c${path}%c，参数：`,
-    "color:red",
-    "",
+  console.groupCollapsed(
+    `发送请求：%c${path}%c`,
     "color:green",
     ""
   );
-  console.log(params);
-  console.log("%c|%c收到请求结果：", "color:red", "");
+  console.log('参数：')
+  console.log(isReactive(params) ? unref(params) : params);
+  console.log("收到请求结果：");
   console.log(res);
-  console.log(`%c└${`─`.repeat(len)}`, "color:red");
+  console.groupEnd();
   if (res.code !== 200) {
     return Promise.reject(res);
   }

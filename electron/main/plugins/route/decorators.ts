@@ -8,9 +8,7 @@ export function Route(url: string) {
     descriptior?: TypedPropertyDescriptor<any>
   ) {
     descriptior.enumerable = true;
-    const ctor = new target.constructor();
     apiList.push({
-      uid: ctor.uid,
       Class: target.constructor,
       path: url,
       propertyKey,

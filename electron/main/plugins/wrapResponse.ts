@@ -1,5 +1,4 @@
-import lodash from "lodash";
-const { omit } = lodash;
+import {omit} from "lodash-es";
 
 export default (raw: any) => {
   return {

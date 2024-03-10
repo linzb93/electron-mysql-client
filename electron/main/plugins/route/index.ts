@@ -2,6 +2,7 @@ import { ipcMain } from "electron";
 import LoginController from "../../api/login";
 import DatabaseController from "../../api/database";
 import TableController from "../../api/table";
+import ListController from "../../api/list";
 import { getApiList } from "./decorators";
 import wrapResponse from "../../plugins/wrapResponse";
 import { HTTP_STATUS } from "../../plugins/constant";
@@ -10,6 +11,7 @@ export default () => {
   new LoginController();
   new DatabaseController();
   new TableController();
+  new ListController();
 
   ipcMain.handle("api", async (event, requestStr: string) => {
     const request = JSON.parse(requestStr) as any;
