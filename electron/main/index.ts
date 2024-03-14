@@ -13,6 +13,8 @@ process.env.VITE_PUBLIC = process.env.VITE_DEV_SERVER_URL
   ? join(process.env.DIST_ELECTRON, "../public")
   : process.env.DIST;
 
+const isMac = process.platform === 'darwin';
+
 // Set application name for Windows 10+ notifications
 if (process.platform === "win32") app.setAppUserModelId(app.getName());
 
@@ -35,10 +37,10 @@ const indexHtml = join(process.env.DIST, "index.html");
 async function createWindow() {
   const screenInfo = screen.getPrimaryDisplay();
   win = new BrowserWindow({
-    title: "Main window",
+    title: "Mysql Client",
     width: screenInfo.size.width,
     height:screenInfo.size.height,
-    icon: join(process.cwd(), "public/icon.icns"),
+    icon: join(process.cwd(), `public/icon.${isMac ? 'icns' : 'ico'}`),
     webPreferences: {
       preload,
       // Warning: Enable nodeIntegration and disable contextIsolation is not secure in production
