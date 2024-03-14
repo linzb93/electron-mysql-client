@@ -1,4 +1,5 @@
 import { ipcMain } from "electron";
+import chalk from "chalk";
 import LoginController from "../../api/login";
 import DatabaseController from "../../api/database";
 import TableController from "../../api/table";
@@ -13,7 +14,7 @@ export default () => {
   new TableController();
   new ListController();
 
-  ipcMain.handle("api", async (event, requestStr: string) => {
+  ipcMain.handle("api", async (_, requestStr: string) => {
     const request = JSON.parse(requestStr) as any;
     const { path } = request;
     const apiList = getApiList();
@@ -25,7 +26,7 @@ export default () => {
         const ret = await ctor[propertyKey](request);
         return wrapResponse(ret);
       } catch (error) {
-        console.log(`${match.path} error`);
+        console.log(`api ${chalk.green(match.path)} error`);
         console.log(error.message);
         return wrapResponse({
           code: HTTP_STATUS.INTERNAL_SERVER_ERROR,

@@ -2,33 +2,44 @@ import Controller from "../plugins/route/Controller";
 import { Route } from "../plugins/route/decorators";
 
 export default class extends Controller {
-    @Route("list-get")
+  @Route("list-get")
   async queryList(request) {
     const { params } = request;
     await this.mysql.changeUser({ database: params.database });
-    const {pageSize, pageIndex} = params;
-    const list = await this.mysql.query(`select * from ${params.table} limit ${(pageIndex - 1) * pageSize}, ${pageSize}`);
+    const { pageSize, pageIndex } = params;
+    const [list, totalRes] = await Promise.all([
+      this.mysql.query(
+        `select * from ${params.table} limit ${
+          (pageIndex - 1) * pageSize
+        }, ${pageSize}`
+      ),
+      this.mysql.query(`select count(*) from ${params.table}`),
+    ]);
     return {
       message: "success",
       list: list[0],
-      totalCount: list[0].length,
+      totalCount: Object.values(totalRes[0][0])[0],
     };
   }
-  @Route('list-create')
-  async createList(request:any) {
-    const {params} = request;
+  @Route("list-create")
+  async createList(request: any) {
+    const { params } = request;
     await this.mysql.changeUser({ database: params.database });
-    const keys = params.data.map(item => item.key).join(',');
-    const values = params.data.map(item => {
-      if (['char', 'varchar'].includes(item.key)) {
-        return `\'${item.value}\'`;
-      }
-      return item.value;
-    }).join(',');
-    await this.mysql.execute(`insert into ${params.table} (${keys}) values ${values}`);
+    const keys = params.data.map((item) => item.key).join(",");
+    const values = params.data
+      .map((item) => {
+        if (["char", "varchar"].includes(item.key)) {
+          return `\'${item.value}\'`;
+        }
+        return item.value;
+      })
+      .join(",");
+    await this.mysql.execute(
+      `insert into ${params.table} (${keys}) values ${values}`
+    );
     return {
-      message: "success"
-    }
+      message: "success",
+    };
   }
   @Route("list-delete")
   async deleteList(request) {

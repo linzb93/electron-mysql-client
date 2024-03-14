@@ -3,7 +3,7 @@
  */
 {
   $schema: "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  appId: "YourAppID",
+  appId: "com.linzb93.mysql",
   asar: true,
   productName: "Mysql CLient",
   directories: {
@@ -13,7 +13,7 @@
   mac: {
     target: ["dmg"],
     artifactName: "${productName}-Mac-${version}-Installer.${ext}",
-    icon: "public/icon.svg",
+    icon: "./public/icon.icns",
   },
   win: {
     target: [
@@ -22,6 +22,7 @@
         arch: ["x64"],
       },
     ],
+    icon: "./public/logo.ico",
     artifactName: "${productName}-Windows-${version}-Setup.${ext}",
   },
   nsis: {
