@@ -1,4 +1,10 @@
-const apiList = [];
+interface ApiItem {
+  Class: any;
+  path: string;
+  propertyKey: string;
+}
+
+const apiList: ApiItem[] = [];
 export const getApiList = () => apiList;
 
 export function Route(url: string) {

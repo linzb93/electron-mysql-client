@@ -1,9 +1,12 @@
 import Controller from "../plugins/route/Controller";
 import { Route } from "../plugins/route/decorators";
+import { Request, TableItem } from "../types/api";
 
 export default class extends Controller {
   @Route("list-get")
-  async queryList(request) {
+  async queryList(
+    request: Request<TableItem & { pageSize: number; pageIndex: number }>
+  ) {
     const { params } = request;
     await this.mysql.changeUser({ database: params.database });
     const { pageSize, pageIndex } = params;
@@ -22,7 +25,9 @@ export default class extends Controller {
     };
   }
   @Route("list-create")
-  async createList(request: any) {
+  async createList(
+    request: Request<TableItem & { data: { key: string; value: string }[] }>
+  ) {
     const { params } = request;
     await this.mysql.changeUser({ database: params.database });
     const keys = params.data.map((item) => item.key).join(",");
@@ -42,7 +47,7 @@ export default class extends Controller {
     };
   }
   @Route("list-delete")
-  async deleteList(request) {
+  async deleteList(request: Request & { id: number }) {
     const { params } = request;
     // await this.mysql.changeUser({ database: params.database });
     // await this.mysql.execute(

@@ -1,8 +1,17 @@
 import Controller from "../plugins/route/Controller";
 import { Route } from "../plugins/route/decorators";
 import jwt from "jsonwebtoken";
-import {pick} from "lodash-es";
+import { pick } from "lodash-es";
 import { HTTP_STATUS } from "../plugins/constant";
+import { Request } from "../types/api";
+
+interface LoginForm {
+  host: string;
+  port: number;
+  username: string;
+  password: string;
+}
+
 const jwtVerify = (token: string) =>
   new Promise((resolve, reject) => {
     jwt.verify(token, "shhhhh", (err, decoded) => {
@@ -19,7 +28,7 @@ class LoginController extends Controller {
     super();
   }
   @Route("login")
-  async login(request: any) {
+  async login(request: Request<LoginForm>) {
     const { params } = request;
     try {
       await this.mysql.createConnection({
@@ -46,11 +55,11 @@ class LoginController extends Controller {
     await this.mysql.end();
   }
   @Route("token-validate")
-  async tokenValidate(request: any) {
+  async tokenValidate(request: Request<{ token: string }>) {
     const { token } = request.params;
-    let decoded = {} as any;
+    let decoded: LoginForm;
     try {
-      decoded = await jwtVerify(token);
+      decoded = (await jwtVerify(token)) as LoginForm;
     } catch (error) {
       return {
         code: HTTP_STATUS.NOTLOGIN,
@@ -65,8 +74,8 @@ class LoginController extends Controller {
       message: "token有效",
     };
   }
-  @Route('register')
-  register(params:any) {
+  @Route("register")
+  register(params: Request<LoginForm>) {
     // 注册功能以后再写
   }
 }

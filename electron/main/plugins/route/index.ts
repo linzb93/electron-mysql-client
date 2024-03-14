@@ -7,7 +7,7 @@ import ListController from "../../api/list";
 import { getApiList } from "./decorators";
 import wrapResponse from "../../plugins/wrapResponse";
 import { HTTP_STATUS } from "../../plugins/constant";
-
+import { Request } from "../../types/api";
 export default () => {
   new LoginController();
   new DatabaseController();
@@ -15,7 +15,7 @@ export default () => {
   new ListController();
 
   ipcMain.handle("api", async (_, requestStr: string) => {
-    const request = JSON.parse(requestStr) as any;
+    const request = JSON.parse(requestStr) as Request;
     const { path } = request;
     const apiList = getApiList();
     const match = apiList.find((item) => item.path === path);

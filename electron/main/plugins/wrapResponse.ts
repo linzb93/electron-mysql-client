@@ -1,6 +1,11 @@
-import {omit} from "lodash-es";
+import { omit } from "lodash-es";
 
-export default (raw: any) => {
+interface Params {
+  code: number;
+  message: string;
+}
+
+export default (raw: Params) => {
   return {
     code: raw.code || 200,
     message: raw.message,
